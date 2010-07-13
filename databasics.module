@@ -87,7 +87,7 @@ function databasics_user_page($account) {
   while ($row = db_fetch_object($result)) {
     $table_rows[] = array(
       l($row->title, 'node/' . $row->nid),
-      t('%num', array('%num' => $row->view_count)),
+      check_plain($row->view_count),
     );
   }
 

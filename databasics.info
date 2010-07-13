@@ -2,4 +2,4 @@
 name = Databasics
 description = Database examples
 core = 6.x
-package = Lullabot Examples
+package = Lullabot Example

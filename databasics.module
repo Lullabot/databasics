@@ -2,29 +2,42 @@
 // $Id$
 
 /**
- * Simple nodeapi implementation.
+ * Implementation of hook_nodeapi().
  */
 function databasics_nodeapi(&$node, $op, $teaser = FALSE, $page = FALSE) {
   global $user;
-  
-  switch ($op) {
-    case 'view':
-      if ($page) {
-        $view_count = db_result(db_query("SELECT view_count FROM {databasics} WHERE nid = %d AND uid = %d", $node->nid, $user->uid));
-        if (!$view_count) {
-          $view_count = 1;
-          db_query("INSERT INTO {databasics} (nid, uid, view_count) VALUES (%d, %d, %d)", $node->nid, $user->uid, $view_count);
-        }
-        else {
-          $view_count++;
-          db_query("UPDATE {databasics} SET view_count = %d WHERE nid = %d AND uid = %d", $view_count, $node->nid, $user->uid);        
-        }
-        
-        $node->content['node_views'] = array(
-          '#value' => t('You have viewed this page %num times', array('%num' => $view_count)),
-          '#weight' => 10,
-        );
-      }      
-      break;
+
+  if ($op == 'view' && $page) {
+    // Increment the current count.
+    $view_count = databasics_get_count($node->nid, $user->uid);
+    $view_count++;
+    $time = time();
+    databasics_set_count($view_count, $node->nid, $user->uid, $time);
+
+    // Add the view count information to the node content.
+    $node->content['node_views'] = array(
+      '#value' => t('You have viewed this page %num times', array('%num' => $view_count)),
+      '#weight' => 10,
+    );
+  }
+}
+
+/**
+ * Get a view count for a node.
+ */
+function databasics_get_count($nid, $uid) {
+  $result = db_query("SELECT view_count FROM {databasics} WHERE nid = %d AND uid = %d", $nid, $uid);
+  return (int) db_result($result);
+}
+
+/**
+ * Set a view count for a node.
+ */
+function databasics_set_count($view_count, $nid, $uid) {
+  // Try to update an existing row.
+  db_query("UPDATE {databasics} SET view_count = %d WHERE nid = %d AND uid = %d", $view_count, $nid, $uid);        
+  // If no rows were updated, a row doesn't exist yet for this user.
+  if (db_affected_rows() == 0) {
+    db_query("INSERT INTO {databasics} (nid, uid, view_count) VALUES (%d, %d, %d)", $nid, $uid, $view_count);
   }
 }

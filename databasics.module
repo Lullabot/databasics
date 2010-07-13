@@ -2,29 +2,98 @@
 // $Id$
 
 /**
- * Simple nodeapi implementation.
+ * Implementation of hook_menu().
+ */
+function databasics_menu() {
+  $items = array();
+  $items['user/%user/databasics'] = array(
+    'title' => 'page views',
+    'description' => 'Listing of page views by user.',
+    'page callback' => 'databasics_user_page',
+    'page arguments' => array(1),
+    'access callback' => 'databasics_access_callback',
+    'access arguments' => array(1),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+/**
+ * Only allow users to see the page views for their own account or if they are
+ * an administrator.
+ */
+function databasics_access_callback($account) {
+  global $user;
+
+  if ($user->uid == $account->uid || user_access('access site reports')) {
+    return TRUE;
+  }
+}
+
+/**
+ * Implementation of hook_nodeapi().
  */
 function databasics_nodeapi(&$node, $op, $teaser = FALSE, $page = FALSE) {
   global $user;
-  
-  switch ($op) {
-    case 'view':
-      if ($page) {
-        $view_count = db_result(db_query("SELECT view_count FROM {databasics} WHERE nid = %d AND uid = %d", $node->nid, $user->uid));
-        if (!$view_count) {
-          $view_count = 1;
-          db_query("INSERT INTO {databasics} (nid, uid, view_count) VALUES (%d, %d, %d)", $node->nid, $user->uid, $view_count);
-        }
-        else {
-          $view_count++;
-          db_query("UPDATE {databasics} SET view_count = %d WHERE nid = %d AND uid = %d", $view_count, $node->nid, $user->uid);        
-        }
-        
-        $node->content['node_views'] = array(
-          '#value' => t('You have viewed this page %num times', array('%num' => $view_count)),
-          '#weight' => 10,
-        );
-      }      
-      break;
+
+  if ($op == 'view' && $page) {
+    // Increment the current count.
+    $result = databasics_get_count($node->nid, $user->uid);
+    $result['view_count']++;
+    $time = time();
+    databasics_set_count($result['view_count'], $node->nid, $user->uid, $time);
+
+    // Add the view count information to the node content.
+    $node->content['node_views'] = array(
+      '#value' => t('You have viewed this page %num times and the last time was %date', array('%num' => $result['view_count'], '%date' => format_date($result['view_count']))),
+      '#weight' => 10,
+    );
   }
+}
+
+/**
+ * Get a view count for a node.
+ */
+function databasics_get_count($nid, $uid) {
+  $result = db_query("SELECT view_count, last_viewed FROM {databasics} WHERE nid = %d AND uid = %d", $nid, $uid);
+  return db_fetch_array($result);
+}
+
+/**
+ * Set a view count for a node.
+ */
+function databasics_set_count($view_count, $nid, $uid, $time) {
+  // Try to update an existing row.
+  db_query("UPDATE {databasics} SET view_count = %d, last_viewed = %d WHERE nid = %d AND uid = %d", $view_count, $time, $nid, $uid);        
+  // If no rows were updated, a row doesn't exist yet for this user.
+  if (db_affected_rows() == 0) {
+    db_query("INSERT INTO {databasics} (nid, uid, view_count, last_viewed) VALUES (%d, %d, %d, %d)", $nid, $uid, $view_count, $time);
+  }
+}
+
+/**
+ * Display a tab on the user/N/databasics page which lists all the pages on the
+ * site that the user has viewed more than once and the total number of times
+ * each page has been viewed.
+ */
+function databasics_user_page($account) {
+  $table_rows = array();
+
+  // Get information about all the pages the user has viewed more than once.
+  $result = db_query('SELECT d.view_count, n.nid, n.title FROM {databasics} d INNER JOIN {node} n ON n.nid = d.nid WHERE d.uid = %d ORDER BY n.title', $account->uid);
+
+  // Itterate over the results returned from the database and collect the
+  // information in an array.
+  while ($row = db_fetch_object($result)) {
+    $table_rows[] = array(
+      l($row->title, 'node/' . $row->nid),
+      t('%num', array('%num' => $row->view_count),
+    );
+  }
+
+  // Colum headers for the table.
+  $headers = array(t('Node Title'), t('Views'));
+
+  // Output the results as a table.
+  return theme('table', $headers, $table_rows);
 }

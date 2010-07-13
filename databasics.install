@@ -40,6 +40,13 @@ function databasics_schema() {
         'default' => 0,
         'description' => t('Simple counter per user.'),
       ),
+     'last_viewed' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('Last viewed date.'),
+      ),
     ),
     'primary key' => array('nid', 'uid'),
   );
@@ -75,35 +82,15 @@ function databasics_uninstall() {
  */
 function databasics_update_6000() {
   $ret = array();
-
-  $table = array(
-    'description' => t('Holds basic data for databasics.'),
-    'fields' => array(
-      'nid' => array(
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'default' => 0,
-        'description' => t("The node's {node}.nid."),
-      ),
-      'uid' => array(
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'default' => 0,
-        'description' => t("The user's {users}.nid."),
-      ),
-      'view_count' => array(
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'default' => 0,
-        'description' => t('Simple counter per user.'),
-      ),
-    ),
-    'primary key' => array('nid', 'uid'),
+  
+  $spec = array(
+    'type' => 'int',
+    'unsigned' => TRUE,
+    'not null' => TRUE,
+    'default' => 0,
+    'description' => t('Last viewed date.'),
   );
-  db_create_table($ret, 'databasics', $table);
-
+  db_add_field($ret, 'databasics', 'last_viewed', $spec);
+  
   return $ret;
 }

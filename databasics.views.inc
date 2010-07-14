@@ -11,6 +11,13 @@ function databasics_views_data() {
   // have a group defined will go into this field by default.
   $data['databasics']['table']['group']  = t('Databasics');
 
+  // Advertise this table as a possible base table
+  $data['databasics']['table']['base'] = array(
+    'title' => t('Databasics'),
+    'help' => t('Stores node visits for users.'),
+    'weight' => 10,
+  );
+
   $data['databasics']['table']['join'] = array(
     'node' => array(
       'left_field' => 'nid',
@@ -55,8 +62,11 @@ function databasics_views_data() {
   );
 
   $data['databasics']['nid'] = array(
-    'title' => t('Node'),
+    'title' => t('Node ID'),
     'help' => t('The Node that was viewed.'),
+    'field' => array(
+      'handler' => 'views_handler_field_node',
+    ),
     'argument' => array(
       'handler' => 'views_handler_argument_node_nid',
     ),
@@ -69,8 +79,11 @@ function databasics_views_data() {
   );
 
   $data['databasics']['uid'] = array(
-    'title' => t('User'),
+    'title' => t('User ID'),
     'help' => t("The User that viewed the node."),
+    'field' => array(
+      'handler' => 'views_handler_field_user',
+    ),
     'argument' => array(
       'handler' => 'views_handler_argument_user_uid',
     ),

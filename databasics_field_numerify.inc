@@ -1,10 +1,14 @@
 <?php
 // $Id$
+
 /**
  * Render a numeric field as a "written" string.
  */
+class databasics_field_numerify extends views_handler_field_numeric {
+  // Oh, wow. An actual *class!* With inheritance and everything!
+  // We'll piggyback on Views' normal numeric field handler to make
+  // things easier for ourselves.
 
-class databasics_field_numeric extends views_handler_field_numeric {
   /**
    * Define the settings unique to this views field handler.
    */
@@ -16,6 +20,7 @@ class databasics_field_numeric extends views_handler_field_numeric {
     $options['numerify'] = array('default' => FALSE);
     return $options;
   }
+
 
   /**
    * Define the settings settings form for this field handler's options.
@@ -35,7 +40,8 @@ class databasics_field_numeric extends views_handler_field_numeric {
       );
     }
   }
-
+  
+  
   /**
    * Render the field's value after it's been pulled from the database.
    */
@@ -49,15 +55,22 @@ class databasics_field_numeric extends views_handler_field_numeric {
       // If we get here, the user DID want to numerify the field. We'll get our
       // value from the list handed to us, and call our helper function to format it.
       $value = (int) $values->{$this->field_alias};
-      return numerify($value);
+      return $this->numerify($value);
     }
   }
+  
+
+
+
+
+
+
 
   /**
    * Thar be dragons here. Read not this code! It is full of wrong. But it works!
    * ...For numbers smaller than one million.
    */
-  function numerify($no) {
+  function numerify($no = 0) {
     $words = array(
       '0' => '',
       '1' => 'one',
@@ -112,11 +125,11 @@ class databasics_field_numeric extends views_handler_field_numeric {
         $value1 = $value * 100;
       }        
       if(array_key_exists($highno,$words))
-        return $words[$highno] ." ". $novalue ." ". numerify($remainno);
+        return $words[$highno] ." ". $novalue ." ". $this->numerify($remainno);
       else { 
         $unit = $highno % 10;
         $ten = (int)($highno / 10) * 10;             
-        return $words[$ten] ." ". $words[$unit] ." ". $novalue ." ". numerify($remainno);
+        return $words[$ten] ." ". $words[$unit] ." ". $novalue ." ". $this->numerify($remainno);
       }
     }
   }

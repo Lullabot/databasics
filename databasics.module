@@ -105,6 +105,6 @@ function databasics_user_page($account) {
 function databasics_views_api() {
   return array(
     'api' => 2, // Lets Views bypass out of date code.
-    'path' => drupal_get_path('module', 'viewmaster'), // optional!
+    'path' => drupal_get_path('module', 'databasics'), // optional!
   );
 }

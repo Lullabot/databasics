@@ -9,7 +9,7 @@ function databasics_views_data() {
 
   // Define the base group of this table. Fields that don't
   // have a group defined will go into this field by default.
-  $data['databasics']['table']['group']  = t('Databasics statistics');
+  $data['databasics']['table']['group']  = t('Databasics');
 
   $data['databasics']['table']['join'] = array(
     'node' => array(
@@ -24,10 +24,10 @@ function databasics_views_data() {
 
   // The number of times a node has been viewed
   $data['databasics']['view_count'] = array(
-    'title' => t('ViewMaster count'),
-    'help' => t('The total number of times the node has been viewed.'),
+    'title' => t('Databasics count'),
+    'help' => t('The number of times the node has been viewed.'),
     'field' => array(
-      'handler' => 'views_handler_field_numeric',
+      'handler' => 'databasics_field_numerify',
       'click sortable' => TRUE,
      ),
     'filter' => array(
@@ -54,30 +54,37 @@ function databasics_views_data() {
     ),
   );
 
-  // user
-  $data['databasics']['uid'] = array(
-    'title' => t('User'),
-    'help' => t('The user who visited the site.'),
-    'relationship' => array(
-      'handler' => 'views_handler_relationship',
-      'base' => 'users',
-      'base field' => 'uid',
-     ),
-  );
-
-  // node
   $data['databasics']['nid'] = array(
     'title' => t('Node'),
-    'help' => t('The node that was viewed.'),
+    'help' => t('The Node that was viewed.'),
+    'argument' => array(
+      'handler' => 'views_handler_argument_node_nid',
+    ),
     'relationship' => array(
-      'handler' => 'views_handler_relationship',
       'base' => 'node',
       'base field' => 'nid',
-     ),
+      'handler' => 'views_handler_relationship',
+      'label' => t('Node'),
+    ),
+  );
+
+  $data['databasics']['uid'] = array(
+    'title' => t('User'),
+    'help' => t("The User that viewed the node."),
+    'argument' => array(
+      'handler' => 'views_handler_argument_user_uid',
+    ),
+    'relationship' => array(
+      'base' => 'users',
+      'base field' => 'uid',
+      'handler' => 'views_handler_relationship',
+      'label' => t('User'),
+    ),
   );
 
   return $data;
 }
+
 
 /**
  * Implementation of hook_views_handlers() to register all of the basic handlers
@@ -86,7 +93,7 @@ function databasics_views_data() {
 function databasics_views_handlers() {
   return array(
     'info' => array(
-      'path' => drupal_get_path('module', 'views') . '/modules/databasics',
+      'path' => drupal_get_path('module', 'databasics') ,
     ),
     'handlers' => array(
       'databasics_field_numerify' => array(

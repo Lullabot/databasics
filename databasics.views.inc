@@ -82,7 +82,7 @@ function databasics_views_data() {
     'title' => t('Node ID'),
     'help' => t('The Node that was viewed.'),
     'field' => array(
-      'handler' => 'views_handler_field_node',
+      'handler' => 'views_handler_field_numeric',
     ),
     
     // This tells Views that the 'nid' column should be usable as an argument,
@@ -107,7 +107,7 @@ function databasics_views_data() {
     'title' => t('User ID'),
     'help' => t("The User that viewed the node."),
     'field' => array(
-      'handler' => 'views_handler_field_user',
+      'handler' => 'views_handler_argument_node_nid',
     ),
     'argument' => array(
       'handler' => 'views_handler_argument_user_uid',

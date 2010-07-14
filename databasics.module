@@ -97,3 +97,14 @@ function databasics_user_page($account) {
   // Output the results as a table.
   return theme('table', $headers, $table_rows);
 }
+
+/**
+ * Implementation of hook_views_api. This just announces to Views that we're
+ * here, and have include files for it to load.
+ */
+function databasics_views_api() {
+  return array(
+    'api' => 2, // Lets Views bypass out of date code.
+    'path' => drupal_get_path('module', 'viewmaster'), // optional!
+  );
+}

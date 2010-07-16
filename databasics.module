@@ -13,7 +13,7 @@ function databasics_menu() {
     'page arguments' => array(1),
     'access callback' => 'databasics_access_callback',
     'access arguments' => array(1),
-    'type' => MENU_NORMAL_ITEM,
+    'type' => MENU_LOCAL_TASK,
   );
   return $items;
 }
@@ -55,7 +55,7 @@ function databasics_nodeapi(&$node, $op, $teaser = FALSE, $page = FALSE) {
 
     // Add the view count information to the node content.
     $node->content['node_views'] = array(
-      '#value' => t('You have viewed this page %num times and the last time was %date', array('%num' => $result['view_count'], '%date' => format_date($result['view_count']))),
+      '#value' => t('You have viewed this page %num times and the last time was %date', array('%num' => $result['view_count'], '%date' => format_date($result['last_viewed']))),
       '#weight' => 10,
     );
   }
@@ -83,25 +83,25 @@ function databasics_set_count($view_count, $nid, $uid, $time) {
 
 /**
  * Display a tab on the user/N/databasics page which lists all the pages on the
- * site that the user has viewed more than once and the total number of times
+ * site that the user has viewed and the total number of times
  * each page has been viewed.
  */
 function databasics_user_page($account) {
   $table_rows = array();
 
-  // Get information about all the pages the user has viewed more than once.
+  // Get information about all the pages the user has viewed 
   $result = db_query('SELECT d.view_count, n.nid, n.title FROM {databasics} d INNER JOIN {node} n ON n.nid = d.nid WHERE d.uid = %d ORDER BY n.title', $account->uid);
 
-  // Itterate over the results returned from the database and collect the
+  // Iterate over the results returned from the database and collect the
   // information in an array.
   while ($row = db_fetch_object($result)) {
     $table_rows[] = array(
       l($row->title, 'node/' . $row->nid),
-      t('%num', array('%num' => $row->view_count)),
+      check_plain($row->view_count),
     );
   }
 
-  // Colum headers for the table.
+  // Column headers for the table.
   $headers = array(t('Node Title'), t('Views'));
 
   // Output the results as a table.

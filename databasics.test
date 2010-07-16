@@ -44,7 +44,5 @@ class DatabasicsTestCase extends DrupalWebTestCase {
     $this->assertText(t('You have viewed this page 1 times'));
     $this->drupalGet('node/'.$node->nid);
     $this->assertText(t('You have viewed this page 2 times'));
-    
-    $this->assertPattern('/You have viewed this page <em>[0-9]+</em> times/', t('The magical regex worked.'));
   }
 }

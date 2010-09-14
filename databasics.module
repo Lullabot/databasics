@@ -2,6 +2,11 @@
 // $Id$
 
 /**
+ * @file
+ * Databasics module.
+ */
+
+/**
  * Implementation of hook_menu().
  */
 function databasics_menu() {

@@ -82,7 +82,7 @@ function databasics_uninstall() {
  */
 function databasics_update_6000() {
   $ret = array();
-  
+
   $spec = array(
     'type' => 'int',
     'unsigned' => TRUE,
@@ -91,6 +91,6 @@ function databasics_update_6000() {
     'description' => t('Last viewed date.'),
   );
   db_add_field($ret, 'databasics', 'last_viewed', $spec);
-  
+
   return $ret;
 }

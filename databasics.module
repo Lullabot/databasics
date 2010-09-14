@@ -8,21 +8,11 @@ function databasics_nodeapi(&$node, $op, $teaser = FALSE, $page = FALSE) {
   global $user;
 
   if ($op == 'view' && $page) {
+    // Load up the current count.
+    $view_count = databasics_get_count($node->nid, $user->uid) + 1;
+
     // Increment the current count.
-    $result = databasics_get_count($node->nid, $user->uid);
-    // Timestamp for the current request.
-    $time = time();
-
-    // If the database returns a result we increment it.
-    if (isset($result['view_count'])) {
-      $result['view_count']++;
-    }
-    // If the database does not return a result create the initial count/time.
-    else {
-      $result = array('view_count' => 1, 'last_viewed' => $time);
-    }
-
-    databasics_set_count($view_count, $node->nid, $user->uid, $time);
+    databasics_set_count($view_count, $node->nid, $user->uid);
 
     // Add the view count information to the node content.
     $node->content['node_views'] = array(

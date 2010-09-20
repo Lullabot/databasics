@@ -136,7 +136,7 @@ function databasics_views_handlers() {
       'path' => drupal_get_path('module', 'databasics') ,
     ),
     
-    // This lists out each custom handler our moduledefines.
+    // This lists out each custom handler our module defines.
     'handlers' => array(
       'databasics_field_numerify' => array(
         // If our handler inherits from an existing one, we list its PHP class.

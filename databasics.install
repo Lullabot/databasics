@@ -78,7 +78,7 @@ function databasics_uninstall() {
  * Implementation of hook_update_N().
  *
  * One of these per database update. Drupal executes them sequentially.
- * The new 6.x naming convention is at: http://drupal.org/node/114774#update-n.
+ * The 6.x naming convention is at: http://drupal.org/node/114774#update-n.
  */
 function databasics_update_6000() {
   $ret = array();

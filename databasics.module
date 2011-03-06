@@ -82,10 +82,10 @@ function databasics_node_view($node, $view_mode = 'full') {
  *   The stdClass record, or FALSE if no record exists.
  */
 function databasics_get_record($nid, $uid) {
-  $query = db_select('databasics', 'd')
-    ->fields('d', array('view_count', 'last_viewed'))
-    ->condition('d.nid', $nid)
-    ->condition('d.uid', $uid);
+  $query = db_select('databasics')
+    ->fields('databasics')
+    ->condition('nid', $nid)
+    ->condition('uid', $uid);
 
   return $query->execute()->fetch();
 }
@@ -101,8 +101,8 @@ function databasics_set_record(stdClass $record) {
   // an Update query, so if the record already exists, it will be updated.
   // @see http://drupal.org/node/310085
   db_merge('databasics')
-    ->key(array('nid' => $nid))
-    ->key(array('uid' => $uid))
+    ->key(array('nid' => $record->nid))
+    ->key(array('uid' => $record->uid))
     ->fields((array) $record)
     ->execute();
 }

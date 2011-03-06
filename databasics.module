@@ -10,8 +10,9 @@
  */
 function databasics_menu() {
   $items = array();
+
   $items['user/%user/databasics'] = array(
-    'title' => 'page views',
+    'title' => 'Page Views',
     'description' => 'Listing of page views by user.',
     'page callback' => 'databasics_user_page',
     'page arguments' => array(1),
@@ -19,6 +20,7 @@ function databasics_menu() {
     'access arguments' => array(1),
     'type' => MENU_LOCAL_TASK,
   );
+
   return $items;
 }
 
@@ -123,27 +125,32 @@ function databasics_user_page(stdClass $account) {
 
   // Get information about all the pages the user has viewed
   $query = db_select('databasics', 'd')
-    ->condition('d.nid', $nid)
     ->condition('d.uid', $account->uid);
 
   // Joins return the alias of the table, so we can't chain it.
   $query->innerJoin('node', 'n', 'n.nid = d.nid');
-  $query->fields('d', array('view_count'))
-        ->fields('n', array('nid', 'title'));
 
-  $results = $query->execute();
+  // Load up all the fields from the databasics table.
+  $query->fields('d');
+
+  // You can use addField() to add single fields. This is especially useful if
+  // you need to alias a field, but keep in mind you cannot chain these together.
+  $query->addField('n', 'nid');
+  $query->addField('n', 'title');
 
   // Iterate over the results returned from the database and collect the
   // information in an array.
-  foreach ($results as $row) {
+  $results = $query->execute();
+  foreach ($results as $record) {
     $rows[] = array(
-      l($row->title, 'node/' . $row->nid),
-      check_plain($row->view_count),
+      l($record->title, 'node/' . $record->nid),
+      check_plain($record->view_count),
+      format_date($record->last_viewed),
     );
   }
 
   // Column headers for the table.
-  $header = array(t('Node Title'), t('Views'));
+  $header = array(t('Node Title'), t('Views'), t('Last Viewed'));
 
   // Return a renderable array.
   $output = array();

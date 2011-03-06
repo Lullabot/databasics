@@ -1,5 +1,4 @@
-; $Id$
 name = Databasics
-description = Database examples
-core = 6.x
-package = Lullabot Example
+description = Database example module.
+core = 7.x
+package = Lullabot Examples

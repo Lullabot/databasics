@@ -12,66 +12,68 @@ function databasics_node_view($node, $view_mode = 'full') {
   if ($view_mode == 'full') {
     global $user;
 
-    // Load up the current count.
-    $view_count = databasics_get_count($node->nid, $user->uid) + 1;
+    // Load up the current record.
+    $record = databasics_get_record($node->nid, $user->uid);
+
+    // If there is no record, create one.
+    if (!$record) {
+      $record = new stdClass();
+      $record->nid = $node->nid;
+      $record->uid = $user->uid;
+      $record->view_count = 0;
+    }
 
     // Increment the current count.
-    databasics_set_count($view_count, $node->nid, $user->uid);
+    $record->view_count++;
+
+    // Save the record.
+    databasics_set_record($record);
+
+    // Set up an array of placeholders to pass to t().
+    $t_args = array(
+      '%num' => $record->view_count,
+    );
 
     // Add the view count information to the node content.
     $node->content['node_views'] = array(
-      '#value' => t('You have viewed this page %num times', array('%num' => $view_count)),
+      '#markup' => t('You have viewed this page %num times.', $t_args),
       '#weight' => 10,
     );
   }
 }
 
 /**
- * Get a view count for a node.
+ * Get the record.
  *
  * @param int $nid
  *   The node id.
  * @param int $uid
  *   The user id.
- * @return int
- *   The number of times this node has been viewed by this user.
+ * @return mixed
+ *   The stdClass record, or FALSE if no record exists.
  */
-function databasics_get_count($nid, $uid) {
+function databasics_get_record($nid, $uid) {
   $query = db_select('databasics', 'd')
     ->fields('d', array('view_count'))
     ->condition('d.nid', $nid)
     ->condition('d.uid', $uid);
 
-  return (int) $query->execute()->fetchField();
+  return $query->execute()->fetch();
 }
 
 /**
- * Set a view count for a node.
+ * Save a record.
  *
- * @param int $view_count
- *   The number of times this node has been viewed by this user.
- * @param int $nid
- *   The node id.
- * @param int $uid
- *   The user id.
+ * @param stdClass $record
+ *   The record to save.
  */
-function databasics_set_count($view_count, $nid, $uid) {
-  // Try to update an existing row.
-  db_update('databasics')
-    ->fields(array('view_count' => $view_count))
-    ->condition('nid', $nid)
-    ->condition('uid', $uid)
+function databasics_set_record(stdClass $record) {
+  // Use a Merge query. A Merge query is a combination of an Insert query and
+  // an Update query, so if the record already exists, it will be updated.
+  // @see http://drupal.org/node/310085
+  db_merge('databasics')
+    ->key(array('nid' => $nid))
+    ->key(array('uid' => $uid))
+    ->fields((array) $record)
     ->execute();
-
-  // If no rows were updated, a row doesn't exist yet for this user.
-  if (db_affected_rows() == 0) {
-    $fields = array(
-      'nid' => $nid,
-      'uid' => $uid,
-      'view_count' => $view_count,
-    );
-    db_insert('databasics')
-      ->fields($fields)
-      ->execute();
-  }
 }

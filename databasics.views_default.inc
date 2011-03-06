@@ -1,443 +1,268 @@
 <?php
 
 /**
- * Expose default views on behalf of Databasics module.
+ * Implement hook_views_default_views().
  */
 function databasics_views_default_views() {
-  $view = new view;
-  $view->name = 'databasics_visits';
-  $view->description = 'Displays nodes a given users has visited';
-  $view->tag = '';
-  $view->view_php = '';
-  $view->base_table = 'node';
-  $view->is_cacheable = FALSE;
-  $view->api_version = 2;
-  $view->disabled = TRUE; /* Edit this to true to make a default view disabled initially */
-  $handler = $view->new_display('default', 'Defaults', 'default');
-  $handler->override_option('fields', array(
-    'title' => array(
-      'label' => 'Node',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'link_class' => '',
-        'alt' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'link_to_node' => 1,
-      'exclude' => 0,
-      'id' => 'title',
-      'table' => 'node',
-      'field' => 'title',
-      'relationship' => 'none',
-    ),
-    'last_viewed' => array(
-      'label' => 'Last visit',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'link_class' => '',
-        'alt' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'date_format' => 'time ago',
-      'custom_date_format' => '',
-      'exclude' => 0,
-      'id' => 'last_viewed',
-      'table' => 'databasics',
-      'field' => 'last_viewed',
-      'relationship' => 'none',
-    ),
-    'view_count' => array(
-      'label' => 'Number of visits',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'link_class' => '',
-        'alt' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'set_precision' => FALSE,
-      'precision' => 0,
-      'decimal' => '.',
-      'separator' => ',',
-      'prefix' => '',
-      'suffix' => '',
-      'numerify' => 0,
-      'exclude' => 0,
-      'id' => 'view_count',
-      'table' => 'databasics',
-      'field' => 'view_count',
-      'relationship' => 'none',
-    ),
-  ));
-  $handler->override_option('arguments', array(
-    'uid' => array(
-      'default_action' => 'default',
-      'style_plugin' => 'default_summary',
-      'style_options' => array(),
-      'wildcard' => 'all',
-      'wildcard_substitution' => 'All',
-      'title' => '%1',
-      'breadcrumb' => '',
-      'default_argument_type' => 'user',
-      'default_argument' => '',
-      'validate_type' => 'none',
-      'validate_fail' => 'not found',
-      'break_phrase' => 0,
-      'not' => 0,
-      'id' => 'uid',
-      'table' => 'databasics',
-      'field' => 'uid',
-      'validate_user_argument_type' => 'uid',
-      'validate_user_roles' => array(
-        '2' => 0,
-      ),
-      'relationship' => 'none',
-      'default_options_div_prefix' => '',
-      'default_argument_fixed' => '',
-      'default_argument_user' => 0,
-      'default_argument_php' => '',
-      'validate_argument_node_type' => array(
-        'page' => 0,
-        'story' => 0,
-      ),
-      'validate_argument_node_access' => 0,
-      'validate_argument_nid_type' => 'nid',
-      'validate_argument_vocabulary' => array(),
-      'validate_argument_type' => 'tid',
-      'validate_argument_transform' => 0,
-      'validate_user_restrict_roles' => 0,
-      'validate_argument_php' => '',
-      'override' => array(
-        'button' => 'Override',
-      ),
-    ),
-  ));
-  $handler->override_option('access', array(
-    'type' => 'none',
-  ));
-  $handler->override_option('cache', array(
-    'type' => 'none',
-  ));
-  $handler->override_option('use_ajax', TRUE);
-  $handler->override_option('use_pager', 'mini');
-  $handler->override_option('style_plugin', 'table');
-  $handler->override_option('style_options', array(
-    'grouping' => '',
-    'override' => 1,
-    'sticky' => 0,
-    'order' => 'desc',
-    'columns' => array(
-      'title' => 'title',
-      'last_viewed' => 'last_viewed',
-      'view_count' => 'view_count',
-    ),
-    'info' => array(
-      'title' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'last_viewed' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'view_count' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-    ),
-    'default' => 'last_viewed',
-  ));
-  $handler = $view->new_display('page', 'Page', 'page_1');
-  $handler->override_option('path', 'user/%/databasics');
-  $handler->override_option('menu', array(
-    'type' => 'tab',
-    'title' => 'Databasics',
-    'description' => '',
-    'weight' => '10',
-    'name' => 'navigation',
-  ));
-  $handler->override_option('tab_options', array(
-    'type' => 'none',
-    'title' => '',
-    'description' => '',
-    'weight' => 0,
-    'name' => 'navigation',
-  ));
-  $views['databasics_visits'] = $view;
-
+  /*
+   * View 'databasics_visitors'
+   */
   $view = new view;
   $view->name = 'databasics_visitors';
   $view->description = 'Displays a list of users who have visited a given node.';
-  $view->tag = '';
-  $view->view_php = '';
+  $view->tag = 'databasics';
   $view->base_table = 'users';
-  $view->is_cacheable = FALSE;
-  $view->api_version = 2;
-  $view->disabled = TRUE; /* Edit this to true to make a default view disabled initially */
+  $view->human_name = 'Databasics Visitors';
+  $view->core = 0;
+  $view->api_version = '3.0-alpha1';
+  $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+
+  /* Display: Defaults */
   $handler = $view->new_display('default', 'Defaults', 'default');
-  $handler->override_option('fields', array(
+  $handler->display->display_options['use_ajax'] = TRUE;
+  $handler->display->display_options['access']['type'] = 'none';
+  $handler->display->display_options['cache']['type'] = 'none';
+  $handler->display->display_options['query']['type'] = 'views_query';
+  $handler->display->display_options['exposed_form']['type'] = 'basic';
+  $handler->display->display_options['pager']['type'] = 'mini';
+  $handler->display->display_options['style_plugin'] = 'table';
+  $handler->display->display_options['style_options']['columns'] = array(
+    'name' => 'name',
+    'last_viewed' => 'last_viewed',
+    'view_count' => 'view_count',
+  );
+  $handler->display->display_options['style_options']['default'] = 'last_viewed';
+  $handler->display->display_options['style_options']['info'] = array(
     'name' => array(
-      'label' => 'User',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'link_class' => '',
-        'alt' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'link_to_user' => 1,
-      'overwrite_anonymous' => 0,
-      'anonymous_text' => '',
-      'exclude' => 0,
-      'id' => 'name',
-      'table' => 'users',
-      'field' => 'name',
-      'relationship' => 'none',
-      'override' => array(
-        'button' => 'Override',
-      ),
+      'sortable' => 1,
+      'separator' => '',
     ),
     'last_viewed' => array(
-      'label' => 'Time of visit',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'link_class' => '',
-        'alt' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'date_format' => 'time ago',
-      'custom_date_format' => '',
-      'exclude' => 0,
-      'id' => 'last_viewed',
-      'table' => 'databasics',
-      'field' => 'last_viewed',
-      'relationship' => 'none',
+      'sortable' => 1,
+      'separator' => '',
     ),
     'view_count' => array(
-      'label' => 'Number of visits',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'link_class' => '',
-        'alt' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'set_precision' => FALSE,
-      'precision' => 0,
-      'decimal' => '.',
-      'separator' => ',',
-      'prefix' => '',
-      'suffix' => '',
-      'numerify' => 0,
-      'exclude' => 0,
-      'id' => 'view_count',
-      'table' => 'databasics',
-      'field' => 'view_count',
-      'relationship' => 'none',
+      'sortable' => 1,
+      'separator' => '',
     ),
-  ));
-  $handler->override_option('arguments', array(
-    'nid' => array(
-      'default_action' => 'default',
-      'style_plugin' => 'default_summary',
-      'style_options' => array(),
-      'wildcard' => 'all',
-      'wildcard_substitution' => 'All',
-      'title' => '%1',
-      'breadcrumb' => '',
-      'default_argument_type' => 'node',
-      'default_argument' => '',
-      'validate_type' => 'none',
-      'validate_fail' => 'not found',
-      'break_phrase' => 0,
-      'not' => 0,
-      'id' => 'nid',
-      'table' => 'databasics',
-      'field' => 'nid',
-      'validate_user_argument_type' => 'uid',
-      'validate_user_roles' => array(
-        '2' => 0,
-      ),
-      'relationship' => 'none',
-      'default_options_div_prefix' => '',
-      'default_argument_fixed' => '',
-      'default_argument_user' => 0,
-      'default_argument_php' => '',
-      'validate_argument_node_type' => array(
-        'page' => 0,
-        'story' => 0,
-      ),
-      'validate_argument_node_access' => 0,
-      'validate_argument_nid_type' => 'nid',
-      'validate_argument_vocabulary' => array(),
-      'validate_argument_type' => 'tid',
-      'validate_argument_transform' => 0,
-      'validate_user_restrict_roles' => 0,
-      'validate_argument_php' => '',
-      'override' => array(
-        'button' => 'Override',
-      ),
-    ),
-  ));
-  $handler->override_option('filters', array(
-    'view_count' => array(
-      'operator' => '>',
-      'value' => array(
-        'value' => '0',
-        'min' => '',
-        'max' => '',
-      ),
-      'group' => '0',
-      'exposed' => FALSE,
-      'expose' => array(
-        'operator' => FALSE,
-        'label' => '',
-      ),
-      'id' => 'view_count',
-      'table' => 'databasics',
-      'field' => 'view_count',
-      'relationship' => 'none',
-    ),
-  ));
-  $handler->override_option('access', array(
-    'type' => 'none',
-  ));
-  $handler->override_option('cache', array(
-    'type' => 'none',
-  ));
-  $handler->override_option('use_ajax', TRUE);
-  $handler->override_option('use_pager', 'mini');
-  $handler->override_option('style_plugin', 'table');
-  $handler->override_option('style_options', array(
-    'grouping' => '',
-    'override' => 1,
-    'sticky' => 0,
-    'order' => 'desc',
-    'columns' => array(
-      'name' => 'name',
-      'last_viewed' => 'last_viewed',
-      'view_count' => 'view_count',
-    ),
-    'info' => array(
-      'name' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'last_viewed' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'view_count' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-    ),
-    'default' => 'last_viewed',
-  ));
+  );
+  $handler->display->display_options['style_options']['override'] = 1;
+  $handler->display->display_options['style_options']['sticky'] = 0;
+  $handler->display->display_options['style_options']['order'] = 'desc';
+  /* Field: User: Name */
+  $handler->display->display_options['fields']['name']['id'] = 'name';
+  $handler->display->display_options['fields']['name']['table'] = 'users';
+  $handler->display->display_options['fields']['name']['field'] = 'name';
+  $handler->display->display_options['fields']['name']['label'] = 'User';
+  $handler->display->display_options['fields']['name']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['name']['alter']['make_link'] = 0;
+  $handler->display->display_options['fields']['name']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['name']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['name']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['name']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['name']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['name']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['name']['empty_zero'] = 0;
+  $handler->display->display_options['fields']['name']['link_to_user'] = 1;
+  $handler->display->display_options['fields']['name']['overwrite_anonymous'] = 0;
+  /* Field: Databasics: Last visit */
+  $handler->display->display_options['fields']['last_viewed']['id'] = 'last_viewed';
+  $handler->display->display_options['fields']['last_viewed']['table'] = 'databasics';
+  $handler->display->display_options['fields']['last_viewed']['field'] = 'last_viewed';
+  $handler->display->display_options['fields']['last_viewed']['label'] = 'Time of visit';
+  $handler->display->display_options['fields']['last_viewed']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['last_viewed']['alter']['make_link'] = 0;
+  $handler->display->display_options['fields']['last_viewed']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['last_viewed']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['last_viewed']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['last_viewed']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['last_viewed']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['last_viewed']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['last_viewed']['empty_zero'] = 0;
+  $handler->display->display_options['fields']['last_viewed']['date_format'] = 'time ago';
+  /* Field: Broken/missing handler */
+  $handler->display->display_options['fields']['view_count']['id'] = 'view_count';
+  $handler->display->display_options['fields']['view_count']['table'] = 'databasics';
+  $handler->display->display_options['fields']['view_count']['field'] = 'view_count';
+  $handler->display->display_options['fields']['view_count']['label'] = 'Number of visits';
+  $handler->display->display_options['fields']['view_count']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['view_count']['alter']['make_link'] = 0;
+  $handler->display->display_options['fields']['view_count']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['view_count']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['view_count']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['view_count']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['view_count']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['view_count']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['view_count']['empty_zero'] = 0;
+  /* Argument: Databasics: Node ID */
+  $handler->display->display_options['arguments']['nid']['id'] = 'nid';
+  $handler->display->display_options['arguments']['nid']['table'] = 'databasics';
+  $handler->display->display_options['arguments']['nid']['field'] = 'nid';
+  $handler->display->display_options['arguments']['nid']['default_action'] = 'default';
+  $handler->display->display_options['arguments']['nid']['style_plugin'] = 'default_summary';
+  $handler->display->display_options['arguments']['nid']['title'] = '%1';
+  $handler->display->display_options['arguments']['nid']['default_argument_type'] = 'node';
+  $handler->display->display_options['arguments']['nid']['break_phrase'] = 0;
+  $handler->display->display_options['arguments']['nid']['not'] = 0;
+  /* Filter: Databasics: Visits */
+  $handler->display->display_options['filters']['view_count']['id'] = 'view_count';
+  $handler->display->display_options['filters']['view_count']['table'] = 'databasics';
+  $handler->display->display_options['filters']['view_count']['field'] = 'view_count';
+  $handler->display->display_options['filters']['view_count']['operator'] = '>';
+  $handler->display->display_options['filters']['view_count']['value']['value'] = '0';
+  $handler->display->display_options['filters']['view_count']['expose']['operator'] = FALSE;
+
+  /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page_1');
-  $handler->override_option('path', 'node/%/databasics');
-  $handler->override_option('menu', array(
-    'type' => 'tab',
-    'title' => 'Databasics',
-    'description' => '',
-    'weight' => '10',
-    'name' => 'navigation',
-  ));
-  $handler->override_option('tab_options', array(
-    'type' => 'none',
-    'title' => '',
-    'description' => '',
-    'weight' => 0,
-    'name' => 'navigation',
-  ));
-  $views['databasics_visitors'] = $view;
-  
+  $handler->display->display_options['path'] = 'node/%/databasics';
+  $handler->display->display_options['menu']['type'] = 'tab';
+  $handler->display->display_options['menu']['title'] = 'Databasics';
+  $handler->display->display_options['menu']['weight'] = '10';
+  $translatables['databasics_visitors'] = array(
+    t('Defaults'),
+    t('more'),
+    t('Apply'),
+    t('Reset'),
+    t('Sort By'),
+    t('Asc'),
+    t('Desc'),
+    t('Items per page'),
+    t('- All -'),
+    t('Offset'),
+    t('User'),
+    t('Time of visit'),
+    t('Number of visits'),
+    t('All'),
+    t('%1'),
+    t('Page'),
+  );
+  $views[$view->name] = $view;
+
+  /*
+   * View 'databasics_visits'
+   */
+  $view = new view;
+  $view->name = 'databasics_visits';
+  $view->description = 'Displays nodes a given users has visited';
+  $view->tag = 'databasics';
+  $view->base_table = 'node';
+  $view->human_name = 'Databasics Visits';
+  $view->core = 0;
+  $view->api_version = '3.0-alpha1';
+  $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+
+  /* Display: Defaults */
+  $handler = $view->new_display('default', 'Defaults', 'default');
+  $handler->display->display_options['use_ajax'] = TRUE;
+  $handler->display->display_options['access']['type'] = 'none';
+  $handler->display->display_options['cache']['type'] = 'none';
+  $handler->display->display_options['query']['type'] = 'views_query';
+  $handler->display->display_options['exposed_form']['type'] = 'basic';
+  $handler->display->display_options['pager']['type'] = 'mini';
+  $handler->display->display_options['style_plugin'] = 'table';
+  $handler->display->display_options['style_options']['columns'] = array(
+    'title' => 'title',
+    'last_viewed' => 'last_viewed',
+    'view_count' => 'view_count',
+  );
+  $handler->display->display_options['style_options']['default'] = 'last_viewed';
+  $handler->display->display_options['style_options']['info'] = array(
+    'title' => array(
+      'sortable' => 1,
+      'separator' => '',
+    ),
+    'last_viewed' => array(
+      'sortable' => 1,
+      'separator' => '',
+    ),
+    'view_count' => array(
+      'sortable' => 1,
+      'separator' => '',
+    ),
+  );
+  $handler->display->display_options['style_options']['override'] = 1;
+  $handler->display->display_options['style_options']['sticky'] = 0;
+  $handler->display->display_options['style_options']['order'] = 'desc';
+  /* Field: Node: Title */
+  $handler->display->display_options['fields']['title']['id'] = 'title';
+  $handler->display->display_options['fields']['title']['table'] = 'node';
+  $handler->display->display_options['fields']['title']['field'] = 'title';
+  $handler->display->display_options['fields']['title']['label'] = 'Node';
+  $handler->display->display_options['fields']['title']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['title']['alter']['make_link'] = 0;
+  $handler->display->display_options['fields']['title']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['title']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['title']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['title']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['title']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['title']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['title']['empty_zero'] = 0;
+  $handler->display->display_options['fields']['title']['link_to_node'] = 1;
+  /* Field: Databasics: Last visit */
+  $handler->display->display_options['fields']['last_viewed']['id'] = 'last_viewed';
+  $handler->display->display_options['fields']['last_viewed']['table'] = 'databasics';
+  $handler->display->display_options['fields']['last_viewed']['field'] = 'last_viewed';
+  $handler->display->display_options['fields']['last_viewed']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['last_viewed']['alter']['make_link'] = 0;
+  $handler->display->display_options['fields']['last_viewed']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['last_viewed']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['last_viewed']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['last_viewed']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['last_viewed']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['last_viewed']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['last_viewed']['empty_zero'] = 0;
+  $handler->display->display_options['fields']['last_viewed']['date_format'] = 'time ago';
+  /* Field: Broken/missing handler */
+  $handler->display->display_options['fields']['view_count']['id'] = 'view_count';
+  $handler->display->display_options['fields']['view_count']['table'] = 'databasics';
+  $handler->display->display_options['fields']['view_count']['field'] = 'view_count';
+  $handler->display->display_options['fields']['view_count']['label'] = 'Number of visits';
+  $handler->display->display_options['fields']['view_count']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['view_count']['alter']['make_link'] = 0;
+  $handler->display->display_options['fields']['view_count']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['view_count']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['view_count']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['view_count']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['view_count']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['view_count']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['view_count']['empty_zero'] = 0;
+  /* Argument: Databasics: User ID */
+  $handler->display->display_options['arguments']['uid']['id'] = 'uid';
+  $handler->display->display_options['arguments']['uid']['table'] = 'databasics';
+  $handler->display->display_options['arguments']['uid']['field'] = 'uid';
+  $handler->display->display_options['arguments']['uid']['default_action'] = 'default';
+  $handler->display->display_options['arguments']['uid']['style_plugin'] = 'default_summary';
+  $handler->display->display_options['arguments']['uid']['title'] = '%1';
+  $handler->display->display_options['arguments']['uid']['default_argument_type'] = 'user';
+  $handler->display->display_options['arguments']['uid']['default_argument_options']['user'] = FALSE;
+  $handler->display->display_options['arguments']['uid']['break_phrase'] = 0;
+  $handler->display->display_options['arguments']['uid']['not'] = 0;
+
+  /* Display: Page */
+  $handler = $view->new_display('page', 'Page', 'page_1');
+  $handler->display->display_options['path'] = 'user/%/databasics';
+  $handler->display->display_options['menu']['type'] = 'tab';
+  $handler->display->display_options['menu']['title'] = 'Databasics';
+  $handler->display->display_options['menu']['weight'] = '10';
+  $translatables['databasics_visits'] = array(
+    t('Defaults'),
+    t('more'),
+    t('Apply'),
+    t('Reset'),
+    t('Sort By'),
+    t('Asc'),
+    t('Desc'),
+    t('Items per page'),
+    t('- All -'),
+    t('Offset'),
+    t('Node'),
+    t('Last visit'),
+    t('Number of visits'),
+    t('All'),
+    t('%1'),
+    t('Page'),
+  );
+  $views[$view->name] = $view;
+
   return $views;
 }

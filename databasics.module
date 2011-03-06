@@ -6,25 +6,6 @@
  */
 
 /**
- * Implements hook_menu().
- */
-function databasics_menu() {
-  $items = array();
-
-  $items['user/%user/databasics'] = array(
-    'title' => 'Page Views',
-    'description' => 'Listing of page views by user.',
-    'page callback' => 'databasics_user_page',
-    'page arguments' => array(1),
-    'access callback' => 'databasics_access_callback',
-    'access arguments' => array(1),
-    'type' => MENU_LOCAL_TASK,
-  );
-
-  return $items;
-}
-
-/**
  * Only allow users to see the page views for their own account or if they are
  * an administrator.
  */
@@ -108,58 +89,6 @@ function databasics_set_record(stdClass $record) {
     ->key(array('uid' => $record->uid))
     ->fields((array) $record)
     ->execute();
-}
-
-/**
- * Display a tab on the user/N/databasics page which lists all the pages on the
- * site that the user has viewed and the total number of times each page has
- * been viewed.
- *
- * @param stdClass $account
- *   The user account.
- * @return
- *   A themed table of the results.
- */
-function databasics_user_page(stdClass $account) {
-  $rows = array();
-
-  // Get information about all the pages the user has viewed
-  $query = db_select('databasics', 'd')
-    ->condition('d.uid', $account->uid);
-
-  // Joins return the alias of the table, so we can't chain it.
-  $query->innerJoin('node', 'n', 'n.nid = d.nid');
-
-  // Load up all the fields from the databasics table.
-  $query->fields('d');
-
-  // You can use addField() to add single fields. This is especially useful if
-  // you need to alias a field, but keep in mind you cannot chain these together.
-  $query->addField('n', 'nid');
-  $query->addField('n', 'title');
-
-  // Iterate over the results returned from the database and collect the
-  // information in an array.
-  $results = $query->execute();
-  foreach ($results as $record) {
-    $rows[] = array(
-      l($record->title, 'node/' . $record->nid),
-      check_plain($record->view_count),
-      format_date($record->last_viewed),
-    );
-  }
-
-  // Column headers for the table.
-  $header = array(t('Node Title'), t('Views'), t('Last Viewed'));
-
-  // Return a renderable array.
-  $output = array();
-  $output['table'] = array(
-    '#theme' => 'table',
-    '#header' => $header,
-    '#rows' => $rows,
-  );
-  return $output;
 }
 
 /**

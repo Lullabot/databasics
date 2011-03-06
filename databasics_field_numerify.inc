@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 /**
  * Render a numeric field as a "written" string.

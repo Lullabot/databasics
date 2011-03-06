@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 function databasics_views_data() {
   // Basic table information.

@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 /**
  * Expose default views on behalf of Databasics module.

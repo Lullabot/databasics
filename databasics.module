@@ -53,6 +53,7 @@ function databasics_node_view($node, $view_mode = 'full') {
 
     // Increment the current count.
     $record->view_count++;
+    $record->last_viewed = REQUEST_TIME;
 
     // Save the record.
     databasics_set_record($record);

@@ -161,3 +161,15 @@ function databasics_user_page(stdClass $account) {
   );
   return $output;
 }
+
+/**
+ * Implements hook_views_api().
+ *
+ * This just announces to Views that we're here, and have include files.
+ */
+function databasics_views_api() {
+  return array(
+    'api' => 3, // Lets Views bypass out of date code.
+    'path' => drupal_get_path('module', 'databasics'), // optional!
+  );
+}

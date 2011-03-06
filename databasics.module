@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 /**
  * @file
@@ -7,7 +6,7 @@
  */
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  */
 function databasics_menu() {
   $items = array();
@@ -30,85 +29,127 @@ function databasics_menu() {
 function databasics_access_callback($account) {
   global $user;
 
-  if ($user->uid == $account->uid || user_access('access site reports')) {
-    return TRUE;
-  }
+  return $user->uid == $account->uid || user_access('access site reports');
 }
 
 /**
- * Implementation of hook_nodeapi().
+ * Implements hook_node_view().
  */
-function databasics_nodeapi(&$node, $op, $teaser = FALSE, $page = FALSE) {
-  global $user;
+function databasics_node_view($node, $view_mode = 'full') {
+  if ($view_mode == 'full') {
+    global $user;
 
-  if ($op == 'view' && $page) {
+    // Load up the current record.
+    $record = databasics_get_record($node->nid, $user->uid);
+
+    // If there is no record, create one.
+    if (!$record) {
+      $record = new stdClass();
+      $record->nid = $node->nid;
+      $record->uid = $user->uid;
+      $record->view_count = 0;
+      $record->last_viewed = REQUEST_TIME;
+    }
+
     // Increment the current count.
-    $result = databasics_get_count($node->nid, $user->uid);
-    // Timestamp for the current request.
-    $time = time();
+    $record->view_count++;
 
-    // If the database returns a result we increment it.
-    if (isset($result['view_count'])) {
-      $result['view_count']++;
-    }
-    // If the database does not return a result create the initial count/time.
-    else {
-      $result = array('view_count' => 1, 'last_viewed' => $time);
-    }
+    // Save the record.
+    databasics_set_record($record);
 
-    databasics_set_count($result['view_count'], $node->nid, $user->uid, $time);
+    // Set up an array of placeholders to pass to t().
+    $t_args = array(
+      '%num' => $record->view_count,
+      '%date' => format_date($record->last_viewed),
+    );
 
     // Add the view count information to the node content.
     $node->content['node_views'] = array(
-      '#value' => t('You have viewed this page %num times and the last time was %date', array('%num' => $result['view_count'], '%date' => format_date($result['last_viewed']))),
+      '#markup' => t('You have viewed this page %num times and the last time was %date.', $t_args),
       '#weight' => 10,
     );
   }
 }
 
 /**
- * Get a view count for a node.
+ * Get the record.
+ *
+ * @param int $nid
+ *   The node id.
+ * @param int $uid
+ *   The user id.
+ * @return mixed
+ *   The stdClass record, or FALSE if no record exists.
  */
-function databasics_get_count($nid, $uid) {
-  $result = db_query("SELECT view_count, last_viewed FROM {databasics} WHERE nid = %d AND uid = %d", $nid, $uid);
-  return db_fetch_array($result);
+function databasics_get_record($nid, $uid) {
+  $query = db_select('databasics', 'd')
+    ->fields('d', array('view_count', 'last_viewed'))
+    ->condition('d.nid', $nid)
+    ->condition('d.uid', $uid);
+
+  return $query->execute()->fetch();
 }
 
 /**
- * Set a view count for a node.
+ * Save a record.
+ *
+ * @param stdClass $record
+ *   The record to save.
  */
-function databasics_set_count($view_count, $nid, $uid, $time) {
-  // Try to update an existing row.
-  db_query("UPDATE {databasics} SET view_count = %d, last_viewed = %d WHERE nid = %d AND uid = %d", $view_count, $time, $nid, $uid);        
-  // If no rows were updated, a row doesn't exist yet for this user.
-  if (db_affected_rows() == 0) {
-    db_query("INSERT INTO {databasics} (nid, uid, view_count, last_viewed) VALUES (%d, %d, %d, %d)", $nid, $uid, $view_count, $time);
-  }
+function databasics_set_record(stdClass $record) {
+  // Use a Merge query. A Merge query is a combination of an Insert query and
+  // an Update query, so if the record already exists, it will be updated.
+  // @see http://drupal.org/node/310085
+  db_merge('databasics')
+    ->key(array('nid' => $nid))
+    ->key(array('uid' => $uid))
+    ->fields((array) $record)
+    ->execute();
 }
 
 /**
  * Display a tab on the user/N/databasics page which lists all the pages on the
- * site that the user has viewed and the total number of times
- * each page has been viewed.
+ * site that the user has viewed and the total number of times each page has
+ * been viewed.
+ *
+ * @param stdClass $account
+ *   The user account.
+ * @return
+ *   A themed table of the results.
  */
-function databasics_user_page($account) {
-  $table_rows = array();
+function databasics_user_page(stdClass $account) {
+  $rows = array();
 
-  // Get information about all the pages the user has viewed 
-  $result = db_query('SELECT d.view_count, n.nid, n.title FROM {databasics} d INNER JOIN {node} n ON n.nid = d.nid WHERE d.uid = %d ORDER BY n.title', $account->uid);
+  // Get information about all the pages the user has viewed
+  $query = db_select('databasics', 'd')
+    ->condition('d.nid', $nid)
+    ->condition('d.uid', $account->uid);
+
+  // Joins return the alias of the table, so we can't chain it.
+  $query->innerJoin('node', 'n', 'n.nid = d.nid');
+  $query->fields('d', array('view_count'))
+        ->fields('n', array('nid', 'title'));
+
+  $results = $query->execute();
 
   // Iterate over the results returned from the database and collect the
   // information in an array.
-  while ($row = db_fetch_object($result)) {
-    $table_rows[] = array(
+  foreach ($results as $row) {
+    $rows[] = array(
       l($row->title, 'node/' . $row->nid),
       check_plain($row->view_count),
     );
   }
 
   // Column headers for the table.
-  $headers = array(t('Node Title'), t('Views'));
+  $header = array(t('Node Title'), t('Views'));
 
-  // Output the results as a table.
-  return theme('table', $headers, $table_rows);
+  // Return a renderable array.
+  $output = array();
+  $output['table'] = array(
+    '#theme' => 'table',
+    '#header' => $header,
+    '#rows' => $rows,
+  );
+  return $output;
 }

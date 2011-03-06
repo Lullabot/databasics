@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 /**
  * @file
@@ -7,12 +6,12 @@
  */
 
 /**
- * Implementation of hook_nodeapi().
+ * Implements hook_node_view().
  */
-function databasics_nodeapi(&$node, $op, $teaser = FALSE, $page = FALSE) {
-  global $user;
+function databasics_node_view($node, $view_mode = 'full') {
+  if ($view_mode == 'full') {
+    global $user;
 
-  if ($op == 'view' && $page) {
     // Load up the current count.
     $view_count = databasics_get_count($node->nid, $user->uid) + 1;
 
@@ -29,20 +28,50 @@ function databasics_nodeapi(&$node, $op, $teaser = FALSE, $page = FALSE) {
 
 /**
  * Get a view count for a node.
+ *
+ * @param int $nid
+ *   The node id.
+ * @param int $uid
+ *   The user id.
+ * @return int
+ *   The number of times this node has been viewed by this user.
  */
 function databasics_get_count($nid, $uid) {
-  $result = db_query("SELECT view_count FROM {databasics} WHERE nid = %d AND uid = %d", $nid, $uid);
-  return (int) db_result($result);
+  $query = db_select('databasics', 'd')
+    ->fields('d', array('view_count'))
+    ->condition('d.nid', $nid)
+    ->condition('d.uid', $uid);
+
+  return (int) $query->execute()->fetchField();
 }
 
 /**
  * Set a view count for a node.
+ *
+ * @param int $view_count
+ *   The number of times this node has been viewed by this user.
+ * @param int $nid
+ *   The node id.
+ * @param int $uid
+ *   The user id.
  */
 function databasics_set_count($view_count, $nid, $uid) {
   // Try to update an existing row.
-  db_query("UPDATE {databasics} SET view_count = %d WHERE nid = %d AND uid = %d", $view_count, $nid, $uid);        
+  db_update('databasics')
+    ->fields(array('view_count' => $view_count))
+    ->condition('nid', $nid)
+    ->condition('uid', $uid)
+    ->execute();
+
   // If no rows were updated, a row doesn't exist yet for this user.
   if (db_affected_rows() == 0) {
-    db_query("INSERT INTO {databasics} (nid, uid, view_count) VALUES (%d, %d, %d)", $nid, $uid, $view_count);
+    $fields = array(
+      'nid' => $nid,
+      'uid' => $uid,
+      'view_count' => $view_count,
+    );
+    db_insert('databasics')
+      ->fields($fields)
+      ->execute();
   }
 }

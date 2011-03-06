@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 /**
  * @file
@@ -7,7 +6,7 @@
  */
 
 /**
- * Implementation of hook_schema().
+ * Implements hook_schema().
  *
  * Describe the module's data model as an associative array. This removes
  * the requirement to write database-specific SQL to create tables.
@@ -17,52 +16,32 @@
 function databasics_schema() {
   // Schema definition of this table.
   $schema['databasics'] = array(
-    'description' => t('Holds basic data for databasics.'),
+    'description' => 'Holds basic data for databasics.',
     'fields' => array(
       'nid' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => t("The node's {node}.nid."),
+        'description' => "The node's {node}.nid.",
       ),
       'uid' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => t("The user's {users}.nid."),
+        'description' => "The user's {users}.nid.",
       ),
       'view_count' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => t('Simple counter per user.'),
+        'description' => 'Simple counter per user.',
       ),
     ),
     'primary key' => array('nid', 'uid'),
   );
 
   return $schema;
-}
-
-/**
- * Implementation of hook_install().
- *
- * Perform initial setup tasks.
- */
-function databasics_install() {
-  // Create tables.
-  drupal_install_schema('databasics');
-}
-
-/**
- * Implementation of hook_uninstall().
- *
- * Perform final clean-up tasks.
- */
-function databasics_uninstall() {
-  // Remove tables.
-  drupal_uninstall_schema('databasics');
 }

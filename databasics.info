@@ -3,3 +3,4 @@ description = Database example module.
 core = 7.x
 package = Lullabot Examples
 dependencies[] = views
+files[] = databasics.test

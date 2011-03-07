@@ -1,0 +1,50 @@
+<?php
+
+/**
+ * Tests the Databasics module.
+ */
+class DatabasicsTestCase extends DrupalWebTestCase {
+  /**
+   * User with rights to post and view content.
+   *
+   * @var stdClass
+   */
+  protected $privileged_user;
+
+  /**
+   * getInfo() returns properties that are displayed in the test selection form.
+   */
+  public static function getInfo() {
+    return array(
+      'name' => 'Databasics',
+      'description' => 'Ensure that the databasics info appears on nodes.',
+      'group' => 'Databasics',
+    );
+  }
+
+  /**
+   * setUp() performs any pre-requisite tasks that need to happen. 
+   */
+  public function setUp() {
+    // Enable any modules required for the test.
+    parent::setUp('databasics');
+
+    // Create and log in our privileged user.
+    $this->privileged_user = $this->drupalCreateUser(array('create article content', 'access content'));
+    $this->drupalLogin($this->privileged_user);
+  }
+
+  /**
+   * Create a node and test the statistics.
+   */
+  public function testDatabasicsCreate() {
+    // Create node to edit.
+    $node = $this->drupalCreateNode(array('type' => 'article'));
+
+    // View the node twice and verify that it increments the counter.
+    $this->drupalGet('node/' . $node->nid);
+    $this->assertText(t('You have viewed this page 1 times'));
+    $this->drupalGet('node/' . $node->nid);
+    $this->assertText(t('You have viewed this page 2 times'));
+  }
+}

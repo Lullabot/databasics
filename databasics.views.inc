@@ -38,7 +38,8 @@ function databasics_views_data() {
     // specifies what Field Handler should be responsible for building its
     // SQL, rendering its value to the user, and so on.
     'field' => array(
-      'handler' => 'databasics_field_numerify',
+      //'handler' => 'databasics_field_numerify',
+      'handler' => 'views_handler_field_numeric',
       'click sortable' => TRUE,
      ),
 
@@ -128,7 +129,7 @@ function databasics_views_handlers() {
     // This tells Views where to find the .inc files for this module's custom
     // handlers.
     'info' => array(
-      'path' => drupal_get_path('module', 'databasics') ,
+      'path' => drupal_get_path('module', 'databasics'),
     ),
 
     // This lists out each custom handler our module defines.

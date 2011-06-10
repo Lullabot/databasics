@@ -5,7 +5,7 @@ function databasics_views_data() {
 
   // Define the group this table and its fields should appear in in the Views
   // Administrative interface.
-  $data['databasics']['table']['group']  = t('Databasics');
+  $data['databasics']['table']['group']  = t('Databasics statistics');
 
   // Advertise this table as a possible base table. This makes it possible
   // to create a standalone view of "Databasics" entries.
@@ -38,8 +38,8 @@ function databasics_views_data() {
     // specifies what Field Handler should be responsible for building its
     // SQL, rendering its value to the user, and so on.
     'field' => array(
-      //'handler' => 'databasics_field_numerify',
-      'handler' => 'views_handler_field_numeric',
+      'handler' => 'databasics_field_numerify',
+      //'handler' => 'views_handler_field_numeric',
       'click sortable' => TRUE,
      ),
 
@@ -93,7 +93,7 @@ function databasics_views_data() {
     // PHP Class should handle building the SQL Join.
     'relationship' => array(
       'base' => 'node',
-      'base field' => 'nid',
+      'field' => 'nid',
       'handler' => 'views_handler_relationship',
       'label' => t('Node'),
     ),
@@ -111,9 +111,9 @@ function databasics_views_data() {
     ),
     'relationship' => array(
       'base' => 'users',
-      'base field' => 'uid',
+      'field' => 'uid',
       'handler' => 'views_handler_relationship',
-      'label' => t('User'),
+      'label' => t('Visitor'),
     ),
   );
 

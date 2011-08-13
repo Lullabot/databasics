@@ -6,103 +6,23 @@
  */
 
 /**
- * Implements hook_menu().
- */
-function databasics_menu() {
-  $items = array();
-
-  $items['user/%user/databasics'] = array(
-    'title' => 'Page Views',
-    'description' => 'Listing of page views by user.',
-    'page callback' => 'databasics_user_page',
-    'page arguments' => array(1),
-    'access callback' => 'databasics_access_callback',
-    'access arguments' => array(1),
-    'type' => MENU_LOCAL_TASK,
-  );
-
-  return $items;
-}
-
-/**
- * Only allow users to see the page views for their own account or if they are
- * an administrator.
- */
-function databasics_access_callback($account) {
-  global $user;
-
-  return $user->uid == $account->uid || user_access('access site reports');
-}
-
-/**
  * Implements hook_node_view().
  */
-function databasics_node_view($node, $view_mode) {
+function databasics_node_view($node, $view_mode = 'full') {
   if ($view_mode == 'full') {
     if (empty($_SESSION['node_views'][$node->nid])) {
       $_SESSION['node_views'][$node->nid] = array('view_count' => 0);
     }
     $_SESSION['node_views'][$node->nid]['view_count']++;
-    $_SESSION['node_views'][$node->nid]['last_viewed'] = REQUEST_TIME;
+
+    // Set up an array of placeholders to pass to t().
+    $t_args = array(
+      '%num' => $record->view_count,
+    );
 
     $node->content['node_views'] = array(
-      '#markup' => t('You have viewed this page %num times.',
-        array('%num' => $_SESSION['node_views'][$node->nid]['view_count'])),
+      '#markup' => t('You have viewed this page %num times.', $t_args),
       '#weight' => 10,
     );
   }
-}
-
-/**
- * Display a tab on the user/N/databasics page which lists all the pages on the
- * site that the user has viewed and the total number of times each page has
- * been viewed.
- *
- * @param stdClass $account
- *   The user account.
- * @return
- *   A themed table of the results.
- */
-function databasics_user_page(stdClass $account) {
-  $results = databasics_get_user_node_views();
-
-  $rows = array();
-  foreach ($results as $record) {
-    $rows[] = array(
-      l($record->title, 'node/' . $record->nid),
-      check_plain($record->view_count),
-      format_date($record->last_viewed),
-    );
-  }
-
-  // Column headers for the table.
-  $header = array(t('Node Title'), t('Views'), t('Last Viewed'));
-
-  // Return a renderable array.
-  $output = array();
-  $output['table'] = array(
-    '#theme' => 'table',
-    '#header' => $header,
-    '#rows' => $rows,
-  );
-  return $output;
-}
-
-/**
- * Load information about the nodes this person has viewed.
- */
-function databasics_get_user_node_views() {
-  $records = array();
-
-  if (!empty($_SESSION['node_views'])) {
-    foreach ($_SESSION['node_views'] as $nid => $record) {
-      $node = node_load($nid);
-      $record = (object) $record;
-      $record->nid = $nid;
-      $record->title = $node->title;
-      $records[$nid] = $record;
-    }
-  }
-
-  return $records;
 }

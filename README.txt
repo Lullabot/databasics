@@ -1,4 +1,7 @@
-The databasics module contains 4 different branches which each represent the module in different states of completion.
+The databasics module contains 5 different branches which each represent the module in different states of completion. If you are teaching this lesson as a part of the Module Development course, you'll typically want to skip databasics-capn and go straight to databasics-start.
+
+*databasics-capn*
+Basically just capn module, if you want to start completely from scratch and show how we're moving to a database storage for the same functionality.
 
 *databasics-start*
 

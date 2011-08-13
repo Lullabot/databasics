@@ -11,13 +11,13 @@
 function databasics_node_view($node, $view_mode = 'full') {
   if ($view_mode == 'full') {
     if (empty($_SESSION['node_views'][$node->nid])) {
-      $_SESSION['node_views'][$node->nid] = array('view_count' => 0);
+      $_SESSION['node_views'][$node->nid] = 0;
     }
-    $_SESSION['node_views'][$node->nid]['view_count']++;
+    $_SESSION['node_views'][$node->nid]++;
 
     // Set up an array of placeholders to pass to t().
     $t_args = array(
-      '%num' => $record->view_count,
+      '%num' => $_SESSION['node_views'][$node->nid],
     );
 
     $node->content['node_views'] = array(

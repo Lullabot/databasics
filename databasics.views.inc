@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Implements hook_views_data().
+ */
 function databasics_views_data() {
   // Basic table information.
 

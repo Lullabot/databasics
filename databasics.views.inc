@@ -104,7 +104,7 @@ function databasics_views_data() {
     'title' => t('User ID'),
     'help' => t("The User that viewed the node."),
     'field' => array(
-      'handler' => 'views_handler_argument_node_nid',
+      'handler' => 'views_handler_field_numeric',
     ),
     'argument' => array(
       'handler' => 'views_handler_argument_user_uid',
@@ -120,26 +120,3 @@ function databasics_views_data() {
   return $data;
 }
 
-/**
- * Implementation of hook_views_handlers() to register all of the basic handlers
- * views uses.
- */
-function databasics_views_handlers() {
-  return array(
-    // This tells Views where to find the .inc files for this module's custom
-    // handlers.
-    'info' => array(
-      'path' => drupal_get_path('module', 'databasics'),
-    ),
-
-    // This lists out each custom handler our module defines.
-    'handlers' => array(
-      'databasics_field_numerify' => array(
-        // If our handler inherits from an existing one, we list its PHP class.
-        'parent' => 'views_handler_field_numeric',
-        // If the class name matches the filename, we can leave 'file' out.
-        'file' => 'databasics_field_numerify.inc',
-      ),
-    ),
-  );
-}

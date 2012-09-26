@@ -4,105 +4,66 @@
  * Implements hook_views_data().
  */
 function databasics_views_data() {
-  // Basic table information.
+  $data = array();
 
-  // Define the group this table and its fields should appear in in the Views
-  // Administrative interface.
-  $data['databasics']['table']['group']  = t('Databasics statistics');
+  // Define the group this table and its fields should appear under
+  // in the Views administrative interface.
+  $data['databasics']['table']['group'] = t('Databasics');
 
   // Advertise this table as a possible base table. This makes it possible
   // to create a standalone view of "Databasics" entries.
   $data['databasics']['table']['base'] = array(
-    // 'field' => 'whoops', // If our table had a primary key it would go here.
     'title' => t('Databasics'),
     'help' => t('Stores node visits for users.'),
   );
 
-  // This tells Views about the base tables that Databasics' foreign keys point
-  // to. If you make a View of THESE base tables, Databasics fields will be
-  // available, too.
+  // This tells Views about the base tables that Databasics'
+  // foreign keys point to. If you make a View of THESE base tables,
+  // Databasics fields will be available too.
   $data['databasics']['table']['join'] = array(
-   'node' => array(
+    'node' => array(
       'left_field' => 'nid', // The column in the node table
       'field' => 'nid',      // The column in our table
     ),
-    'users' => array(
+    'user' => array(
       'left_field' => 'uid',
       'field' => 'uid',
     ),
   );
 
-  // The number of times a node has been viewed
-  $data['databasics']['view_count'] = array(
-    'title' => t('Visits'),
-    'help' => t('The number of times the node has been viewed.'),
-
-    // This tells Views that the column can be used for display purposes,
-    // specifies what Field Handler should be responsible for building its
-    // SQL, rendering its value to the user, and so on.
+  // Node NID field.
+  $data['databasics']['nid'] = array(
+    'title' => t('Nid'),
+    'help' => t('The node ID.'), // The help that appears on the UI,
+    // Information for displaying the nid
     'field' => array(
-      'handler' => 'databasics_field_numerify',
-      //'handler' => 'views_handler_field_numeric',
+      'handler' => 'views_handler_field_node',
       'click sortable' => TRUE,
-     ),
-
-    // This tells Views that the column can be used for sorting, and
-    // specifies what Sort handler should be responsible for building its
-    // ORDER BY clause, settings page, etc. We're using the built-in handler.
-    'sort' => array(
-      'handler' => 'views_handler_sort',
     ),
-
-    // This tells Views that the column can be used for filtering, and
-    // specifies what Filter handler should be responsible for building its
-    // WHERE clause, settings page, etc. We're using the built-in handler.
+    // Information for accepting a nid as an argument.
+    'argument' => array(
+      'handler' => 'views_handler_argument_node_nid',
+      'numeric' => TRUE,
+      'validate type' => 'nid',
+    ),
+    // Information for accepting a nid as a filter.
     'filter' => array(
       'handler' => 'views_handler_filter_numeric',
     ),
-  );
-
-  // The last time a node was viewed
-  $data['databasics']['last_viewed'] = array(
-    'title' => t('Last visit'),
-    'help' => t('Timestamp of when the page was visited.'),
-    'field' => array(
-      'handler' => 'views_handler_field_date',
-      'click sortable' => TRUE,
-    ),
+    // Information for sorting on a nid.
     'sort' => array(
       'handler' => 'views_handler_sort',
     ),
-    'filter' => array(
-      'handler' => 'views_handler_filter_date',
-    ),
-  );
-
-  // The ID of the node that was viewed.
-  $data['databasics']['nid'] = array(
-    'title' => t('Node ID'),
-    'help' => t('The Node that was viewed.'),
-    'field' => array(
-      'handler' => 'views_handler_field_numeric',
-    ),
-
-    // This tells Views that the 'nid' column should be usable as an argument,
-    // and specifies which PHP class should handle processing it.
-    'argument' => array(
-      'handler' => 'views_handler_argument_node_nid',
-    ),
-
-    // This tells Views that the 'nid' can be used as a pointer to the full Node
-    // table, notes what column should be used to construct the join, and what
-    // PHP Class should handle building the SQL Join.
+    // Information for creating a relationship.
     'relationship' => array(
       'base' => 'node',
       'field' => 'nid',
-      'handler' => 'views_handler_relationship',
+      'hander' => 'views_hander_relationship',
       'label' => t('Node'),
     ),
   );
 
-  // The ID of the user that did the viewing.
+  // User UID field.
   $data['databasics']['uid'] = array(
     'title' => t('User ID'),
     'help' => t("The User that viewed the node."),
@@ -112,6 +73,9 @@ function databasics_views_data() {
     'argument' => array(
       'handler' => 'views_handler_argument_user_uid',
     ),
+    'sort' => array(
+      'handler' => 'databasics_handler_sort_custom',
+    ),
     'relationship' => array(
       'base' => 'users',
       'field' => 'uid',
@@ -120,6 +84,77 @@ function databasics_views_data() {
     ),
   );
 
+  // View count field.
+  $data['databasics']['view_count'] = array(
+    'title' => t('Visits'),
+    'help' => t('The number of times the node has been viewed.'),
+    'field' => array(
+      'handler' => 'databasics_handler_field_percent',
+      'click sortable' => TRUE,
+    ),
+    // ORDER BY clause in our SQL builder.
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    // Filter handler.
+    'filter' => array(
+      'handler' => 'databasics_handler_filter_numeric',
+    ),
+  );
+
+  // Displaying the View count field as a graph.
+  $data['databasics']['view_count_percent'] = array(
+    'title' => t('Visits graph'),
+    'help' => t('The number of times the node has been viewed displayed as a bar graph.'),
+    'real field' => 'view_count',
+    'field' => array(
+      'handler' => 'databasics_handler_field_percent_graph',
+    ),
+  );
+
+  // Last visited field.
+  $data['databasics']['last_viewed'] = array(
+    'title' => t('Last visit'),
+    'help' => t('Timestamp of when the page was visited.'),
+    'field' => array(
+      'handler' => 'views_handler_field_date',
+      'click sortable' => TRUE,
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort_date',
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_date',
+    ),
+  );
+
+  // Adding an area.
+  $data['databasics']['databasics_area'] = array(
+    'title' => t('Databasics Area'),
+    'help' => t('Some help text.'),
+    'area' => array(
+      'handler' => 'databasics_handler_area_databasics',
+    ),
+  );
+
   return $data;
 }
+
+/**
+ * Implements hook_views_plugins().
+ */
+function databasics_views_plugins() {
+  return array(
+    'access' => array(
+      'databasics' => array(
+        'title' => t('Databasics'),
+        'help' => t('Determines access to Databasics tab'),
+        'handler' => 'databasics_plugin_access',
+        'uses options' => TRUE,
+      ),
+    ),
+  );
+}
+
+
 

@@ -2,5 +2,10 @@ name = Databasics
 description = Database example module.
 core = 7.x
 package = Lullabot Examples
-dependencies[] = views
-files[] = databasics_field_numerify.inc
+
+files[] = databasics_handler_field_percent.inc
+files[] = databasics_handler_field_percent_graph.inc
+files[] = databasics_handler_filter_numeric.inc
+files[] = databasics_handler_sort_custom.inc
+files[] = databasics_handler_area_databasics.inc
+files[] = databasics_plugin_access.inc

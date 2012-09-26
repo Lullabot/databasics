@@ -9,11 +9,37 @@
  * Only allow users to see the page views for their own account or if they are
  * an administrator.
  */
-function databasics_access_callback($account) {
-  global $user;
+ function databasics_check_access($restrictions) {
+ 	//krumo($restrictions);
+ 	global $user;
+ 	// Change this to a different variable name so we don't accidentally
+ 	// change the global user object.
+ 	$account = $user;
 
-  return $user->uid == $account->uid || user_access('access site reports');
-}
+ 	// We need to cycle through the various levels of access control and 
+ 	// return TRUE when we want to allow access. Returning anything else
+ 	// will cause access to be denied.
+
+ 	// Does the user have permission to access all views?
+ 	if (user_access('access all views', $account)) {
+ 	  return TRUE;
+ 	}
+ 	// Is this a user with permission to access the site reports?
+ 	if (in_array('reports', $restrictions) && user_access('access site reports', $account)) {
+ 	  return TRUE;
+ 	}
+ 	// Is this an owner of a user account?
+ 	if (in_array('owner', $restrictions)) {
+ 	  // Are we on a user page?
+ 	  if (arg(0) == 'user' && is_numeric(arg(1))) {
+ 	    // Does the user ID match the profile page ID?
+ 	     return $account->uid == arg(1);
+ 	  }
+ 	}
+
+ 	// If no conditions are met, let's be sure to deny access by default.
+ 	return FALSE;
+ }
 
 /**
  * Implements hook_node_view().
@@ -93,12 +119,10 @@ function databasics_set_record(stdClass $record) {
 
 /**
  * Implements hook_views_api().
- *
- * This just announces to Views that we're here, and have include files.
  */
 function databasics_views_api() {
   return array(
-    'api' => 3, // Lets Views bypass out of date code.
-    'path' => drupal_get_path('module', 'databasics'), // optional!
+    'api' => 3,
+    'path' => drupal_get_path('module', 'databasics'),
   );
 }

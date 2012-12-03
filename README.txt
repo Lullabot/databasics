@@ -18,3 +18,7 @@ Includes views integration for the databasics table. Demonstrates describing you
 *databasics-test*
 
 Adds a .test file. Demonstrates the use SimpleTest by testing that the "This page has been viewed X times" appears on the appropriate pages.
+
+*databasics-drush*
+
+Adds a databasics.drush.inc command file and a basic drush command for generating random databasics records. Demonstrates the use of most of the basic drush API's.

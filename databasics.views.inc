@@ -58,7 +58,7 @@ function databasics_views_data() {
     'relationship' => array(
       'base' => 'node',
       'field' => 'nid',
-      'hander' => 'views_hander_relationship',
+      'handler' => 'views_handler_relationship',
       'label' => t('Node'),
     ),
   );
